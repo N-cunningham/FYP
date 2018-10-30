@@ -7,9 +7,10 @@ from os import listdir
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from enum import Enum
+import xlsxwriter
 
 stopwords = set(stopwords.words('english'))
-source = "FrontPage Magazine"
+source = "Infowars"
 #date = "2017-04-19"
 #start_month = "April"
 
@@ -51,17 +52,19 @@ word_tokens = word_tokenize(all_news_source_data)
 #print(word_tokens[52][1])
 
 tags = []
-
+last = " "
 for w in word_tokens:
-    if len(w) > 1 and w[0] == "/" and w[1] != "/":
+    #print("Last: "+ last)
+    #print("this:" + w)
+    if len(w) > 1 and w[0] == "/" and w[1] != "/" and last == "<":
         tags.append(w)
+    last = w
+
 
 #print (tags)
 freq_dist = FreqDist(tags)
-
-print(freq_dist.most_common(20))
-
-print(freq_dist)
+freq_dist_top_40 = freq_dist.most_common(40)
+print(freq_dist_top_40)
 
 freq_dist.plot(20, title = source + " Distribution of top 20 HTML tags across all data")
 
@@ -72,5 +75,21 @@ freq_dist.plot(20, title = source + " Distribution of top 20 HTML tags across al
 #        filtered_sentence.append(w)
 
 #print(word_tokens)
-
 #print(filtered_sentence)
+
+row = 6
+
+workbook = xlsxwriter.Workbook('C:/Users/Niall/Desktop/FYP/freqdistOutputs/sources' + str(row) + '.xls')
+worksheet = workbook.add_worksheet()
+
+worksheet.write(0, 1, source)
+worksheet.write(0, 2, str(freq_dist))
+
+i = 4
+
+for f in freq_dist_top_40:
+    worksheet.write(0, i, str(f[0]))
+    worksheet.write(0, i+1 , str(f[1]))
+    i += 2
+
+workbook.close()
