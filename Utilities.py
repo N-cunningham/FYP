@@ -29,6 +29,11 @@ def get_nouns(words):
     return nouns
 
 
+def save_as_JSON(list, file_end):
+
+    with open('C:/Users/Niall/Desktop/FYP/Output JSON Data/' + file_end, 'w') as outfile:
+        json.dump(list, outfile)
+
 
 def get_sources():
     data = []

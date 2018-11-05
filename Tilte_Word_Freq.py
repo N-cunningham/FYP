@@ -4,13 +4,11 @@ import json
 from os import listdir
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import xlsxwriter
-import Utilities
 from Utilities import get_sources
 from Utilities import get_nouns
+from Utilities import save_as_JSON
 
 stopwords = set(stopwords.words('english'))
-source = "RT"
 sources = get_sources()
 months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
 
@@ -44,21 +42,28 @@ for s in sources:
                     data.append(NYT['title'])
         i += 1
 
-all_news_source_data = ' '.join(data)
-word_tokens = word_tokenize(all_news_source_data)
+    all_news_source_data = ' '.join(data)
+    word_tokens = word_tokenize(all_news_source_data)
 
-filtered_titles = []
-additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!']# TODO Come back to investiagte use of punctuation marks
+    filtered_titles = []
+    additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!']# TODO Come back to investiagte use of punctuation marks
 
-nouns = get_nouns(word_tokens)
+    nouns = get_nouns(word_tokens)
 
-for w in nouns:
-    if w not in stopwords and w not in additional_stopords:
-       filtered_titles.append(w)
+    for w in nouns:
+        if w not in stopwords and w not in additional_stopords:
+            filtered_titles.append(w)
 
-freq_dist = FreqDist(filtered_titles)
-freq_dist_top_100= freq_dist.most_common(100)
-print(freq_dist_top_100)
-print(freq_dist)
+    freq_dist = FreqDist(filtered_titles)
+    freq_dist_top_100= freq_dist.most_common(100)
 
-freq_dist.plot(20, title = source + " Distribution of top 20 title words across all data")
+    #print(freq_dist_top_100)
+    #print(freq_dist)
+
+    save_as_JSON(freq_dist_top_100,  s + '_top_100.json')
+    save_as_JSON(freq_dist,  s + '_Frequency_Distribution.json')
+
+    
+    #freq_dist.plot(20, title = s + " Distribution of top 20 title words across all data")
+
+print("Fin")
