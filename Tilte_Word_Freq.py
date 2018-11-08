@@ -24,13 +24,13 @@ for i in months:
     a1 = Article(i, days)
     articles.append(a1)
 
-data = []
+
 i = 0
 #print(files)
 for s in sources:
-    i = 0
+    data = []
     for a in articles:
-        for day in articles[i].dates:
+        for day in a.dates:
             try:
                 article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
             except FileNotFoundError:
@@ -38,9 +38,9 @@ for s in sources:
                 break
             for headline in article_headline:
                 with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
-                    NYT =json.load(f)
+                    NYT = json.load(f)
                     data.append(NYT['title'])
-        i += 1
+
 
     all_news_source_data = ' '.join(data)
     word_tokens = word_tokenize(all_news_source_data)
@@ -63,7 +63,7 @@ for s in sources:
     save_as_JSON(freq_dist_top_100,  s + '_top_100.json')
     save_as_JSON(freq_dist,  s + '_Frequency_Distribution.json')
 
-    
+
     #freq_dist.plot(20, title = s + " Distribution of top 20 title words across all data")
 
 print("Fin")

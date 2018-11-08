@@ -7,10 +7,13 @@ from os import listdir
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from enum import Enum
-import xlsxwriter
+from Utilities import get_sources
+from Utilities import save_as_JSON
+
 
 stopwords = set(stopwords.words('english'))
-source = "Infowars"
+source = "AP"
+sources = get_sources()
 #date = "2017-04-19"
 #start_month = "April"
 
@@ -28,46 +31,60 @@ for i in months:
     a1 = Article(i, days)
     articles.append(a1)
 
-NYT_APR_19 = []
-data = []
-i = 0
+
+for s in sources:
+    data = []
 #print(files)
-for articles[i] in articles:
-    for day in articles[i].dates:
-        try:
-            article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + articles[i].month + "/" + day + "/" + source)
-        except FileNotFoundError:
-            print("No artilces published by "+ source + " on " + day)
-            break
-        for headline in article_headline:
-            with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + articles[i].month + "/" + day + "/" + source + "/" + headline, 'rb') as f:
-                NYT =json.load(f)
-                data.append(NYT['html'])
-    i += 1
+    for a in articles:
+        for day in a.dates:
+            try:
+                article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
+            except FileNotFoundError:
+                print("No artilces published by "+ s + " on " + day)
+                break
+            for headline in article_headline:
+                with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
+                    article_data =json.load(f)
+                    data.append(article_data['html'])
 
-all_news_source_data = ' '.join(data)
+
+    all_news_source_data = []
+    warning = ""
+
+    try:
+        all_news_source_data = ' '.join(data)
+    except MemoryError:
+        print('\n ***Too many aticles from ' + s + ' to batch process*** \n')
+        warning = "INCOMPLETE"
+        save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_top_100_.json')
+        save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_Frequency_Distribution.json')
+
 #print(all_NYT_data)
-word_tokens = word_tokenize(all_news_source_data)
+    if warning != "INCOMPLETE":
+        word_tokens = []
+        word_tokens = word_tokenize(all_news_source_data)
 
-#print(word_tokens[52][1])
+        #print(word_tokens[52][1])
 
-tags = []
-last = " "
-for w in word_tokens:
-    #print("Last: "+ last)
-    #print("this:" + w)
-    if len(w) > 1 and w[0] == "/" and w[1] != "/" and last == "<":
-        tags.append(w)
-    last = w
+        tags = []
+        last = " "
+        for w in word_tokens:
+            #print("Last: "+ last)
+            #print("this:" + w)
+            if len(w) > 1 and w[0] == "/" and w[1] != "/" and last == "<":
+                tags.append(w)
+            last = w
 
 
-#print (tags)
-freq_dist = FreqDist(tags)
-freq_dist_top_40 = freq_dist.most_common(40)
-print(freq_dist_top_40)
+        #print (tags)
+        freq_dist = FreqDist(tags)
+        freq_dist_top_100 = freq_dist.most_common(100)
 
-freq_dist.plot(20, title = source + " Distribution of top 20 HTML tags across all data")
+        print(freq_dist_top_100)
+        save_as_JSON(freq_dist_top_100, 'HTML/' + s +'_top_100.json')
+        save_as_JSON(freq_dist,  'HTML/' + s + '_Frequency_Distribution.json')
 
+print("Finito")
 #filtered_sentence = []
 
 #for w in word_tokens:
@@ -76,20 +93,3 @@ freq_dist.plot(20, title = source + " Distribution of top 20 HTML tags across al
 
 #print(word_tokens)
 #print(filtered_sentence)
-
-row = 6
-
-workbook = xlsxwriter.Workbook('C:/Users/Niall/Desktop/FYP/freqdistOutputs/sources' + str(row) + '.xls')
-worksheet = workbook.add_worksheet()
-
-worksheet.write(0, 1, source)
-worksheet.write(0, 2, str(freq_dist))
-
-i = 4
-
-for f in freq_dist_top_40:
-    worksheet.write(0, i, str(f[0]))
-    worksheet.write(0, i+1 , str(f[1]))
-    i += 2
-
-workbook.close()
