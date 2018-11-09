@@ -30,16 +30,19 @@ i = 0
 for s in sources:
     data = []
     for a in articles:
+        file_exists = "true"
         for day in a.dates:
             try:
                 article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
             except FileNotFoundError:
                 print("No artilces published by "+ s + " on " + day)
-                break
-            for headline in article_headline:
-                with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
-                    NYT = json.load(f)
-                    data.append(NYT['title'])
+                file_exists = "false"
+                
+            if file_exists == "true":
+                for headline in article_headline:
+                    with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
+                        NYT = json.load(f)
+                        data.append(NYT['title'])
 
 
     all_news_source_data = ' '.join(data)

@@ -34,35 +34,49 @@ for i in months:
 
 for s in sources:
     data = []
+    warning = ""
 #print(files)
     for a in articles:
+        article_data = []
         for day in a.dates:
+            file_exists = "true"
             try:
                 article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
             except FileNotFoundError:
                 print("No artilces published by "+ s + " on " + day)
-                break
-            for headline in article_headline:
-                with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
-                    article_data =json.load(f)
-                    data.append(article_data['html'])
+                file_exists = "false"
+
+            if file_exists != "false":
+                article_data = []
+                for headline in article_headline:
+                    with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
+                        try:
+                            article_data = json.load(f)
+                            data.append(article_data['html'])
+                        except MemoryError:
+                            print(' \n ***Too many aticles from ' + s + ' to batch process*** \n')
+                            warning = "INCOMPLETE"
+                            break
+                        except ValueError:
+                            print(' \n ***Decoding failed for '+ a.month + "/" + day + "/" + s + "/" + headline  + ' *** \n')
+
+
 
 
     all_news_source_data = []
-    warning = ""
-
-    try:
-        all_news_source_data = ' '.join(data)
-    except MemoryError:
-        print('\n ***Too many aticles from ' + s + ' to batch process*** \n')
-        warning = "INCOMPLETE"
-        save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_top_100_.json')
-        save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_Frequency_Distribution.json')
+    word_tokens = []
+    if warning != "INCOMPLETE":
+        try:
+            all_news_source_data = ' '.join(data)
+            word_tokens = word_tokenize(all_news_source_data)
+        except MemoryError:
+            print(' \n ***Too many aticles from ' + s + ' to batch process*** \n')
+            warning = "INCOMPLETE"
+            save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_top_100_.json')
+            save_as_JSON( [], 'HTML/'+ 'INCOMPLETE_' + s + '_Frequency_Distribution.json')
 
 #print(all_NYT_data)
     if warning != "INCOMPLETE":
-        word_tokens = []
-        word_tokens = word_tokenize(all_news_source_data)
 
         #print(word_tokens[52][1])
 
