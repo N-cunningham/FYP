@@ -9,7 +9,14 @@ from Utilities import get_nouns
 from Utilities import save_as_JSON
 
 stopwords = set(stopwords.words('english'))
+#raw_sources = get_sources()
 sources = get_sources()
+#offset = 11
+
+#while offset < len(raw_sources):
+    #sources.append(raw_sources[offset])
+    #offset += 1
+
 months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
 
 class Article:
@@ -25,7 +32,6 @@ for i in months:
     articles.append(a1)
 
 
-i = 0
 #print(files)
 for s in sources:
     data = []
@@ -37,7 +43,7 @@ for s in sources:
             except FileNotFoundError:
                 print("No artilces published by "+ s + " on " + day)
                 file_exists = "false"
-                
+
             if file_exists == "true":
                 for headline in article_headline:
                     with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
@@ -58,13 +64,13 @@ for s in sources:
             filtered_titles.append(w)
 
     freq_dist = FreqDist(filtered_titles)
-    freq_dist_top_100= freq_dist.most_common(100)
+    freq_dist_top_100 = freq_dist.most_common(100)
 
     #print(freq_dist_top_100)
     #print(freq_dist)
 
-    save_as_JSON(freq_dist_top_100,  s + '_top_100.json')
-    save_as_JSON(freq_dist,  s + '_Frequency_Distribution.json')
+    save_as_JSON(freq_dist_top_100,  s + 'Linguistic/_top_100.json')
+    save_as_JSON(freq_dist,  s + 'Linguistic/_Frequency_Distribution.json')
 
 
     #freq_dist.plot(20, title = s + " Distribution of top 20 title words across all data")
