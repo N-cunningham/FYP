@@ -47,8 +47,8 @@ for s in sources:
             if file_exists == "true":
                 for headline in article_headline:
                     with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
-                        NYT = json.load(f)
-                        data.append(NYT['title'])
+                        article_content = json.load(f)
+                        data.append(article_content['title'])
 
 
     all_news_source_data = ' '.join(data)
