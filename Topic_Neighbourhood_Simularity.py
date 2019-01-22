@@ -9,7 +9,7 @@ import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 stopwords = set(stopwords.words('english'))
-additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]"]# TODO Come back to investiagte use of punctuation marks
+additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", "."]# TODO Come back to investiagte use of punctuation marks
 #sources = get_sources()
 sourceName = []
 sourceData = []
