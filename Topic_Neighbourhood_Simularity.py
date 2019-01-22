@@ -29,10 +29,12 @@ for i in months:
 sourceA = input("Type source A ")
 sourceB = input("Type source B ")
 topic = input("What is your topic to campair? ")
+part = input("What part of the text do you wish to compair (title/content)? ")
 
 print(sourceA)
 print(sourceB)
 print(topic)
+print(part)
 print("Fin")
 
 sourceName.append(sourceA)
@@ -53,17 +55,37 @@ for s in sourceName:
                 for headline in article_headline:
                     with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
                         article_content = json.load(f)
-                        if topic in article_content['title']:
-                            data.append(article_content['title'])
+                        if topic in article_content[part]:
+                            data.append(article_content[part])
 
-    #for ds in data:
-        #word_tokenize(ds)
-        #ds = Utilities.stem_tokens(ds)
-    data = ' '.join(data)
-    sourceData.append(data)
 
+    data = ''.join(data)
+    data = nltk.word_tokenize(data)
+    neighbourhoods = []
+    index = 0
+
+
+    print("\n\n\nANALYSING NEIGHBOURHOODS\n\n\n")
+
+    for index in range(len(data)):
+        #print(data[index] + " & " + topic)
+        if data[index] == topic:
+            neighbourhoods.append(data[index - 2])
+            neighbourhoods.append(data[index - 1])
+            #neighbourhoods.append(data[index])
+            neighbourhoods.append(data[index + 1])
+            neighbourhoods.append(data[index + 2])
+            index = index + 2
+        index = index + 1
+
+    neighbourhoods = ' '.join(neighbourhoods)
+    sourceData.append(neighbourhoods)
+
+index2 = 0;
 for sd in sourceData:
+    print('\n' + sourceName[index2] + '\n')
     print(sd)
-    print('\n' +"NEW" + '\n')
+    index = index + 1
+
 
 print(Utilities.get_cosine_sim(sourceData[0], sourceData[1]));
