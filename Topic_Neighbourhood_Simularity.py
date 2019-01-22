@@ -85,7 +85,7 @@ index2 = 0;
 for sd in sourceData:
     print('\n' + sourceName[index2] + '\n')
     print(sd)
-    index = index + 1
+    index2 = index2 + 1
 
 
 print(Utilities.get_cosine_sim(sourceData[0], sourceData[1]));
