@@ -9,6 +9,7 @@ import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 stopwords = set(stopwords.words('english'))
+additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!']# TODO Come back to investiagte use of punctuation marks
 #sources = get_sources()
 sourceName = []
 sourceData = []
@@ -70,12 +71,21 @@ for s in sourceName:
     for index in range(len(data)):
         #print(data[index] + " & " + topic)
         if data[index] == topic:
-            neighbourhoods.append(data[index - 2])
-            neighbourhoods.append(data[index - 1])
-            #neighbourhoods.append(data[index])
-            neighbourhoods.append(data[index + 1])
-            neighbourhoods.append(data[index + 2])
+
+            if data[index - 2] not in stopwords and data[index - 2] not in additional_stopords:
+                neighbourhoods.append(data[index - 2])
+
+            if data[index - 1] not in stopwords and data[index - 1] not in additional_stopords:
+                neighbourhoods.append(data[index - 1])
+            
+            if data[index + 1] not in stopwords and data[index + 1] not in additional_stopords:
+                neighbourhoods.append(data[index + 1])
+
+            if data[index + 2] not in stopwords and data[index + 2] not in additional_stopords:
+                neighbourhoods.append(data[index + 2])
+
             index = index + 2
+
         index = index + 1
 
     neighbourhoods = ' '.join(neighbourhoods)
