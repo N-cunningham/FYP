@@ -108,11 +108,18 @@ for sd in sourceData:
     print('\n' + sourceName[index2] + '\n')
     print(sd)
     index2 = index2 + 1
-    word_tokens = word_tokenize(sd)
+    print("\n")
+
+index3 = 0;
+for s in sourceData:
+    print(sourceName[index3])
+    word_tokens = word_tokenize(s)
     freq_dist = FreqDist(word_tokens)
     freq_dist_top_10 = freq_dist.most_common(10)
     print(freq_dist_top_10)
-    print("\n\n")
+    index3 = index3 + 1
+    print("\n")
 
-print("\n\nTotal Simularity")
+
+print("\nTotal Simularity")
 print(Utilities.get_cosine_sim(sourceData[0], sourceData[1]));
