@@ -31,6 +31,18 @@ def get_vectors(*strs):
     vectorizer.fit(text)
     return vectorizer.transform(text).toarray()
 
+def get_verbs(words):
+
+    verbs = []
+
+    for w in words:
+        tagged_word = nltk.pos_tag(w)
+        if (tagged_word[0][1] == 'RB' or tagged_word[0][1] == 'RBR' or tagged_word[0][1] == 'RBS' ):
+                 verbs.append(w)
+    for a in verbs:
+        print("# " + a)
+    return verbs
+
 
 def get_nouns(words):
 

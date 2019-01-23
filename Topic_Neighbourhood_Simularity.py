@@ -9,7 +9,7 @@ import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 stopwords = set(stopwords.words('english'))
-additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", "."]# TODO Come back to investiagte use of punctuation marks
+additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", ".", " ", "e", "i", "a", "r", "."]# TODO Come back to investiagte use of punctuation marks
 #sources = get_sources()
 sourceName = []
 sourceData = []
@@ -31,6 +31,12 @@ sourceA = input("Type source A ")
 sourceB = input("Type source B ")
 topic = input("What is your topic to campair? ")
 part = input("What part of the text do you wish to compair (title/content)? ")
+
+stopWord = ""
+
+while stopWord != "#no":
+    stopWord = input("Do you have any additional stop words to add in this case (type #no if not or to stop)? ")
+    additional_stopords.append(stopWord)
 
 print(sourceA)
 print(sourceB)
@@ -72,6 +78,9 @@ for s in sourceName:
         #print(data[index] + " & " + topic)
         if data[index] == topic:
 
+            if data[index - 3] not in stopwords and data[index - 3] not in additional_stopords:
+                neighbourhoods.append(data[index - 3])
+
             if data[index - 2] not in stopwords and data[index - 2] not in additional_stopords:
                 neighbourhoods.append(data[index - 2])
 
@@ -84,7 +93,10 @@ for s in sourceName:
             if data[index + 2] not in stopwords and data[index + 2] not in additional_stopords:
                 neighbourhoods.append(data[index + 2])
 
-            index = index + 2
+            if data[index + 3] not in stopwords and data[index + 3] not in additional_stopords:
+                neighbourhoods.append(data[index + 3])
+
+            index = index + 3
 
         index = index + 1
 
@@ -96,6 +108,11 @@ for sd in sourceData:
     print('\n' + sourceName[index2] + '\n')
     print(sd)
     index2 = index2 + 1
+    word_tokens = word_tokenize(sd)
+    freq_dist = FreqDist(word_tokens)
+    freq_dist_top_10 = freq_dist.most_common(10)
+    print(freq_dist_top_10)
+    print("\n\n")
 
-
+print("\n\nTotal Simularity")
 print(Utilities.get_cosine_sim(sourceData[0], sourceData[1]));
