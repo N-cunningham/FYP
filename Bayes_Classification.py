@@ -1,5 +1,7 @@
 import numpy as np
 import csv
+import nltk
+import Utilities
 
 attribute = []
 targetAttribute = []
@@ -29,22 +31,11 @@ with open('C:/Users/Niall_cunningham/Desktop/train.tsv', encoding="utf8") as tsv
             truetext = row[1]
 
         if row[1] == falsetext or row[1] ==  "pants-fire" or row[1] == truetext or row[1] == "mostly-true":
-            attribute.append(row[2])
-            targetAttribute.append(row[1])
+            attribute.append(str(row[2]))
+            targetAttribute.append(str(row[1]))
             print(row[1] + ":   " + row[2])
 
         index = index + 1
-
-
-clf = MultinomialNB()
-
-vectorizer = CountVectorizer(attribute)
-attributeVectorizer = vectorizer.fit(attribute)
-
-columnNames = ["label", "text"]
-arra = np.asarray(targetAttribute)
-np.reshape(arra, (1, -1))
-clf.fit(attribute, targetAttribute)
 
 testAttribute = []
 testTargetAttribute = []
@@ -62,3 +53,24 @@ with open('C:/Users/Niall_cunningham/Desktop/test.tsv', encoding="utf8") as tsvT
 
 print("\n" + str(len(targetAttribute)) + " Training cases")
 print(str(len(testTargetAttribute)) + " Test cases")
+
+#
+# CLASSIFICATION
+#
+
+clf = MultinomialNB()
+
+#vectorizer = CountVectorizer(attribute)
+#attributeVectorizer = vectorizer.fit(attribute)
+Count_Vectors = []
+Count_Vectors_two = []
+
+for statement in attribute:
+    print(statement)
+    xtrain_count =  Utilities.get_all_vectors(statement)
+    Count_Vectors.append(xtrain_count)
+    print(xtrain_count)
+
+Count_Vectors_two =  Utilities.get_all_vectors(attribute)
+
+clf.fit(Count_Vectors, targetAttribute)
