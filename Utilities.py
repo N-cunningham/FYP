@@ -22,10 +22,14 @@ for m in months:
     days_with_articles.append(a1)
 
 def get_cosine_sim(*strs):
-    vectors = [t for t in get_vectors(*strs)]
+    vectors = [t for t in get_vector(*strs)]
     return cosine_similarity(vectors)
 
-def get_vectors(*strs):
+def get_all_vectors(*strs):
+    vectors = [t for t in get_vector(*strs)]
+    return vectors
+
+def get_vector(*strs):
     text = [t for t in strs]
     vectorizer = CountVectorizer(text)
     vectorizer.fit(text)
