@@ -11,7 +11,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 stopwords = set(stopwords.words('english'))
 additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", ".", " ", "e", "i", "a", "r", "."]# TODO Come back to investiagte use of punctuation marks
 sources = Utilities.get_sources()
-reliableSources = ["BBC", "CBS News", "CNBC", "CNBC", "NPR", "PBS", "Salon", "Slate", "The Atlantic", "The Daily Beast", "The Hill", "The Huffington Post", "The New York Times", "USA Today", "Vox", "Washington Examiner", "Media Matters for America", "The Fiscal Times", "AP", "Talking Points Memo"]
+reliableSources = ["BBC", "CBS News", "CNBC", "NPR", "PBS", "Salon", "Slate", "The Atlantic", "The Daily Beast", "The Hill", "The Huffington Post", "The New York Times", "USA Today", "Vox", "Washington Examiner", "Media Matters for America", "The Fiscal Times", "AP", "Talking Points Memo"]
 quesionable = ["Alternative Media Syndicate", "Bipartisan Report", "Breitbart", "CNS News", "Conservative Tribune", "Daily Mail", "Freedom Daily", "Liberty Writers", "Hang The Bankers", "Infowars", "Intellihub", "FrontPage Magazine", "Occupy Democrats", "Politicus USA", "Prntly","RedState", "The Duran", "The Gateway Pundit", "TruthFeed", "USA Politics Now", "End the Fed", "NODISINFO", "Freedom Outpost", "Waking Times", "NewsBusters", "Activist Post", "Drudge Report", "The D.C. Clothesline", "World News Politics", "Daily Buzz Live", "DC Gazette"]
 allsources = reliableSources + quesionable
 sourcesHeadings = ["reliable", "quesionable"]
@@ -20,7 +20,6 @@ reliableScores = []
 quesionableScores = []
 distributions = []
 classifications = []
-targetSourceData = []
 months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
 
 #with open ("C:/Users/Niall/Desktop/FYP/Output JSON Data/list_of_sources", 'r') as s:
@@ -32,6 +31,13 @@ class Article:
     def __init__(self, month, dates):
         self.month = month
         self.dates = dates
+
+class sourceNeighbourhood:
+    def __init__(self, sourceName, neighbourhoods):
+        self.sourceName = sourceName
+        self.neighbourhoods = neighbourhoods
+
+sourceNeighbourhoods = []
 
 articles = []
 
@@ -71,7 +77,10 @@ for sourceR in reliableSources:
 for sourceQ in quesionable:
     sourceName.append(sourceQ)
 
-for s in sourceName:
+targetSourceData = []
+
+for sources in sourceName:
+
 
     sourceData = []
     data = []
@@ -79,14 +88,14 @@ for s in sourceName:
         file_exists = "true"
         for day in a.dates:
             try:
-                article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
+                article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sources)
             except FileNotFoundError:
                 #print("No artilces published by "+ s + " on " + day)
                 file_exists = "false"
 
             if file_exists == "true":
                 for headline in article_headline:
-                    with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
+                    with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sources + "/" + headline, 'rb') as f:
                         article_content = json.load(f)
                         if topic in article_content[part]:
                             data.append(article_content[part])
@@ -97,103 +106,78 @@ for s in sourceName:
     neighbourhoods = []
     index = 0
 
+    print(sources)
 
-    print("\n\n\nANALYSING NEIGHBOURHOODS\n\n\n")
 
     for index in range(len(data)):
         #print(data[index] + " & " + topic)
         if data[index] == topic:
 
-            if data[index - 3] not in stopwords and data[index - 3] not in additional_stopords:
-                neighbourhoods.append(data[index - 3])
+            try:
+                if data[index - 3] not in stopwords and data[index - 3] not in additional_stopords:
+                    neighbourhoods.append(data[index - 3])
+            except IndexError:
+                print("Neighbourhood smaller than 3")
 
-            if data[index - 2] not in stopwords and data[index - 2] not in additional_stopords:
-                neighbourhoods.append(data[index - 2])
+            try:
+                if data[index - 2] not in stopwords and data[index - 2] not in additional_stopords:
+                    neighbourhoods.append(data[index - 2])
+            except IndexError:
+                print("Neighbourhood smaller than 2")
 
-            if data[index - 1] not in stopwords and data[index - 1] not in additional_stopords:
-                neighbourhoods.append(data[index - 1])
+            try:
+                if data[index - 1] not in stopwords and data[index - 1] not in additional_stopords:
+                    neighbourhoods.append(data[index - 1])
+            except IndexError:
+                print("Neighbourhood smaller than 1")
 
-            if data[index + 1] not in stopwords and data[index + 1] not in additional_stopords:
-                neighbourhoods.append(data[index + 1])
+            try:
+                if data[index + 1] not in stopwords and data[index + 1] not in additional_stopords:
+                    neighbourhoods.append(data[index + 1])
+            except IndexError:
+                print("Neighbourhood smaller than 1")
 
-            if data[index + 2] not in stopwords and data[index + 2] not in additional_stopords:
-                neighbourhoods.append(data[index + 2])
+            try:
+                if data[index + 2] not in stopwords and data[index + 2] not in additional_stopords:
+                    neighbourhoods.append(data[index + 2])
+            except IndexError:
+                print("Neighbourhood smaller than 2")
 
-            if data[index + 3] not in stopwords and data[index + 3] not in additional_stopords:
-                neighbourhoods.append(data[index + 3])
+            try:
+                if data[index + 3] not in stopwords and data[index + 3] not in additional_stopords:
+                    neighbourhoods.append(data[index + 3])
+            except IndexError:
+                print("Neighbourhood smaller than 3")
 
             index = index + 3
 
         index = index + 1
 
+
     neighbourhoods = ' '.join(neighbourhoods)
-    targetSourceData.append(neighbourhoods)
+    sourceNeighbourhoodA = sourceNeighbourhood(sources, neighbourhoods)
+    targetSourceData.append(sourceNeighbourhoodA)
 
 
+
+for s in sourceName:
+
+    #for sNeigh in targetSourceData:
+    for name in targetSourceData:
+        if name.sourceName == s:
+            targetSourceIndex = targetSourceData.index(name)
 
     #
     #RELIABLE SOURCE
     #
 
-
     reliableData = []
-    for sr in reliableSources:
-        if sr != s:
-            for a in articles:
-                file_exists = "true"
-                for day in a.dates:
-                    try:
-                        article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sr)
-                    except FileNotFoundError:
-                        #print("No artilces published by "+ s + " on " + day)
-                        file_exists = "false"
-
-                    if file_exists == "true":
-                        for headline in article_headline:
-                            with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sr + "/" + headline, 'rb') as f:
-                                article_content = json.load(f)
-                                if topic in article_content[part]:
-                                    reliableData.append(article_content[part])
-            #print(len(reliableData))
+    for sNeigh in targetSourceData:
+        if sNeigh.sourceName != s and sNeigh.sourceName in reliableSources:
+            reliableData.append(sNeigh.neighbourhoods)
 
 
     reliableData = ''.join(reliableData)
-    reliableData = nltk.word_tokenize(reliableData)
-    reliableNeighbourhoods = []
-    index = 0
-
-
-    print("\n\n\nANALYSING NEIGHBOURHOODS\n\n\n")
-
-    for index in range(len(reliableData)):
-        #print(data[index] + " & " + topic)
-        if reliableData[index] == topic:
-
-            if reliableData[index - 3] not in stopwords and reliableData[index - 3] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index - 3])
-
-            if reliableData[index - 2] not in stopwords and reliableData[index - 2] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index - 2])
-
-            if reliableData[index - 1] not in stopwords and reliableData[index - 1] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index - 1])
-
-            if reliableData[index + 1] not in stopwords and reliableData[index + 1] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index + 1])
-
-            if reliableData[index + 2] not in stopwords and reliableData[index + 2] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index + 2])
-
-            if reliableData[index + 3] not in stopwords and reliableData[index + 3] not in additional_stopords:
-                reliableNeighbourhoods.append(reliableData[index + 3])
-
-            index = index + 3
-
-        index = index + 1
-
-    reliableNeighbourhoods = ' '.join(reliableNeighbourhoods)
-    sourceData.append(reliableNeighbourhoods)
-
 
 
     #
@@ -202,66 +186,14 @@ for s in sourceName:
 
 
     quesionabledata = []
-    for sq in quesionable:
-        if sq != s:
-            for a in articles:
-                file_exists = "true"
-                for day in a.dates:
-                    try:
-                        article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sq)
-                    except FileNotFoundError:
-                        #print("No artilces published by "+ s + " on " + day)
-                        file_exists = "false"
-
-                    if file_exists == "true":
-                        for headline in article_headline:
-                            with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sq + "/" + headline, 'rb') as f:
-                                article_content = json.load(f)
-                                if topic in article_content[part]:
-                                    quesionabledata.append(article_content[part])
-            #print(len(quesionabledata))
-
+    for sNeigh in targetSourceData:
+        if sNeigh.sourceName != s and sNeigh.sourceName in quesionable:
+            quesionabledata.append(sNeigh.neighbourhoods)
 
     quesionabledata = ''.join(quesionabledata)
-    quesionabledata = nltk.word_tokenize(quesionabledata)
-    quesionableNeighbourhoods = []
-    index = 0
-
-
-    print("\n\n\nANALYSING NEIGHBOURHOODS\n\n\n")
-
-    for index in range(len(quesionabledata)):
-            #print(data[index] + " & " + topic)
-        if quesionabledata[index] == topic:
-
-            if quesionabledata[index - 3] not in stopwords and quesionabledata[index - 3] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index - 3])
-
-            if quesionabledata[index - 2] not in stopwords and quesionabledata[index - 2] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index - 2])
-
-            if quesionabledata[index - 1] not in stopwords and quesionabledata[index - 1] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index - 1])
-
-            if quesionabledata[index + 1] not in stopwords and quesionabledata[index + 1] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index + 1])
-
-            if quesionabledata[index + 2] not in stopwords and quesionabledata[index + 2] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index + 2])
-
-            if quesionabledata[index + 3] not in stopwords and quesionabledata[index + 3] not in additional_stopords:
-                quesionableNeighbourhoods.append(quesionabledata[index + 3])
-
-            index = index + 3
-
-        index = index + 1
-
-    quesionableNeighbourhoods = ' '.join(quesionableNeighbourhoods)
-    sourceData.append(quesionableNeighbourhoods)
-
 
     index3 = 0;
-    print(s)
+
     for s in sourceData:
         print('\n' + sourcesHeadings[index3])
         word_tokens = word_tokenize(s)
@@ -272,27 +204,26 @@ for s in sourceName:
         index3 = index3 + 1
         print("\n")
 
-
+    print(s)
     print("\nTotal Reliable Simularity")
-    scoreR = Utilities.get_cosine_sim(targetSourceData[0], sourceData[0])
+    scoreR = Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, reliableData)
     reliableScores.append(scoreR)
     print(scoreR);
 
     print("\nTotal Quesionable Simularity")
-    scoreQ = Utilities.get_cosine_sim(targetSourceData[0], sourceData[1])
-    reliableScores.append(scoreQ)
+    scoreQ = Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, quesionabledata)
+    quesionableScores.append(scoreQ)
     print(scoreQ);
 
     #print(sourceData[0])
-    print(len(targetSourceData[0]))
     print("\n")
+    print(str(len(targetSourceData[targetSourceIndex].neighbourhoods)) + " current source neighbourhoods")
 
     #print(sourceData[1])
-    print(str(len(sourceData[0])) + " reliable neighbourhoods")
-    print("\n")
+    print(str(len(reliableData)) + " reliable neighbourhoods")
 
     #print(sourceData[2])
-    print(str(len(sourceData[1])) + " unreliable neighbourhoods")
+    print(str(len(quesionabledata)) + " unreliable neighbourhoods")
     print("\n")
 
 
@@ -300,17 +231,16 @@ index = 0
 
 for index in range(len(reliableScores)):
 
-    print(allsources[index] + "s Results:")
-    print("reliable:" + str(reliableScores[index]))
-    print("quesionable:" + str(quesionableScores[index]))
+    print("\n" + allsources[index] + "s Results:")
+    print("reliable:" + str(reliableScores[index]) + "\n")
 
     if allsources[index] in reliableSources:
-        print("Original clasification: reliable" )
+        print("Original clasification: Reliable" )
 
     if allsources[index] in quesionable:
-        print("Original clasification: quesionable" )
+        print("Original clasification: Quesionable" )
 
-    print(distributions[index])
+    #print(distributions[index])
 
     index = index + 1
 
