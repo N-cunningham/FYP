@@ -268,7 +268,7 @@ for index in range(len(reliableScores)):
         print("Original:"+ "\t" + "Reliable" )
         if reliableScores[index][1][0] > quesionableScores[index][1][0]:
             correct = correct + 1
-        else:
+        elif  reliableScores[index][1][0] != 0 and 0 != quesionableScores[index][1][0]:
             inncorrect = inncorrect + 1
         reliableReliableScores.append(reliableScores[index][1][0])
         reliableQuesionableScores.append(quesionableScores[index][1][0])
@@ -277,7 +277,7 @@ for index in range(len(reliableScores)):
         print("Original:"+ "\t" + "Quesionable")
         if reliableScores[index][1][0] < quesionableScores[index][1][0]:
             correct = correct + 1
-        else:
+        elif  reliableScores[index][1][0] != 0 and 0 != quesionableScores[index][1][0]:
             inncorrect = inncorrect + 1
         quesionableReliableScores.append(reliableScores[index][1][0])
         quesionableQuesionableScores.append(quesionableScores[index][1][0])
