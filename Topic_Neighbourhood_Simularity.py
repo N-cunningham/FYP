@@ -1,3 +1,4 @@
+from __future__ import division
 import nltk
 from nltk import FreqDist
 import json
@@ -7,6 +8,7 @@ from nltk.tokenize import word_tokenize
 import Utilities
 import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 stopwords = set(stopwords.words('english'))
 additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", ".", " ", "e", "i", "a", "r", "."]# TODO Come back to investiagte use of punctuation marks
@@ -113,11 +115,17 @@ for sources in sourceName:
         #print(data[index] + " & " + topic)
         if data[index] == topic:
 
+        #    try:
+        #        if data[index - 4] not in stopwords and data[index - 4] not in additional_stopords:
+        #            neighbourhoods.append(data[index - 4])
+        #    except IndexError:
+        #        print("Neighbourhood smaller than 4")
+
             try:
                 if data[index - 3] not in stopwords and data[index - 3] not in additional_stopords:
                     neighbourhoods.append(data[index - 3])
             except IndexError:
-                print("Neighbourhood smaller than 3")
+               print("Neighbourhood smaller than 3")
 
             try:
                 if data[index - 2] not in stopwords and data[index - 2] not in additional_stopords:
@@ -149,6 +157,12 @@ for sources in sourceName:
             except IndexError:
                 print("Neighbourhood smaller than 3")
 
+            #try:
+            #    if data[index + 4] not in stopwords and data[index + 4] not in additional_stopords:
+            #        neighbourhoods.append(data[index + 4])
+            #except IndexError:
+            #    print("Neighbourhood smaller than 4")
+
             index = index + 3
 
         index = index + 1
@@ -158,6 +172,12 @@ for sources in sourceName:
     sourceNeighbourhoodA = sourceNeighbourhood(sources, neighbourhoods)
     targetSourceData.append(sourceNeighbourhoodA)
 
+docLen = 0
+docCount = 0
+
+for tsd in targetSourceData:
+    docLen = docLen + len(tsd.neighbourhoods)
+    docCount = docCount + 1
 
 
 for s in sourceName:
@@ -194,6 +214,8 @@ for s in sourceName:
 
     index3 = 0;
 
+    avgDocLen = ((len(reliableData) + len(quesionabledata))) / 2
+
     for s in sourceData:
         print('\n' + sourcesHeadings[index3])
         word_tokens = word_tokenize(s)
@@ -206,12 +228,12 @@ for s in sourceName:
 
     print(s)
     print("\nTotal Reliable Simularity")
-    scoreR = Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, reliableData)
+    scoreR = (Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, reliableData)) #* (len(reliableData) / avgDocLen)
     reliableScores.append(scoreR)
     print(scoreR);
 
     print("\nTotal Quesionable Simularity")
-    scoreQ = Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, quesionabledata)
+    scoreQ = Utilities.get_cosine_sim(targetSourceData[targetSourceIndex].neighbourhoods, quesionabledata) #* (len(quesionabledata) / avgDocLen)
     quesionableScores.append(scoreQ)
     print(scoreQ);
 
@@ -227,21 +249,51 @@ for s in sourceName:
     print("\n")
 
 
-index = 0
+index = len(reliableSources)
+
+correct = 0
+inncorrect = 0
+reliableReliableScores = []
+reliableQuesionableScores=[]
+quesionableReliableScores=[]
+quesionableQuesionableScores=[]
 
 for index in range(len(reliableScores)):
 
-    print("\n" + allsources[index] + "s Results:")
-    print("reliable:" + str(reliableScores[index]) + "\n")
+    print("\n" + allsources[index])
+    print("Reliable:"+ "\t" + str(reliableScores[index][1][0]))
+    print("Quesionable:"+ "\t" + str(quesionableScores[index][1][0]))
 
     if allsources[index] in reliableSources:
-        print("Original clasification: Reliable" )
+        print("Original:"+ "\t" + "Reliable" )
+        if reliableScores[index][1][0] > quesionableScores[index][1][0]:
+            correct = correct + 1
+        else:
+            inncorrect = inncorrect + 1
+        reliableReliableScores.append(reliableScores[index][1][0])
+        reliableQuesionableScores.append(quesionableScores[index][1][0])
 
     if allsources[index] in quesionable:
-        print("Original clasification: Quesionable" )
-
-    #print(distributions[index])
+        print("Original:"+ "\t" + "Quesionable")
+        if reliableScores[index][1][0] < quesionableScores[index][1][0]:
+            correct = correct + 1
+        else:
+            inncorrect = inncorrect + 1
+        quesionableReliableScores.append(reliableScores[index][1][0])
+        quesionableQuesionableScores.append(quesionableScores[index][1][0])
 
     index = index + 1
 
-    print("\n")
+
+
+total = correct  +inncorrect
+print("\n" + "Reliable News Sources")
+print("Reliable Score:"+ "\t\t" + str(reliableReliableScores))
+print("Quesionable Score:"+ "\t" + str(reliableQuesionableScores)+"\n")
+print("Quesionable News Sources")
+print("Reliable Score:"+ "\t\t" + str(quesionableReliableScores))
+print("Quesionable Score:"+ "\t" + str(quesionableQuesionableScores))
+
+print("\n" + "CORRECT:"+"\t"+str(correct) + "\t" + str((correct/total) *100) + "%")
+print("\n" + "INNCORRECT:"+"\t"+str(inncorrect) + "\t" + str((inncorrect/total) *100) + "%")
+    #print(distributions[index])
