@@ -10,13 +10,19 @@ from nltk.tokenize import word_tokenize
 from enum import Enum
 from Utilities import get_sources
 from Utilities import save_as_JSON
+import Utilities
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 stopwords = set(stopwords.words('english'))
 additional_stopords = [":", "'", "'s", "The", "-", "?", ",", '"', '”', '“', "'", "'", "'", "'", "$", ")", "(", "_", "&", '...', '.', '�', ';', '!', "''", "``", "%", "@", "--", ".", "[", "]", "[]", "[ ]", "’", "|", "‘", "'", ".", " ", "e", "i", "a", "r", "."]# TODO Come back to investiagte use of punctuation marks
-source = "AP"
+source = "CNBC"
 sources = []
-sources = get_sources()
+freqDists = []
+freqDistsNames = []
+sourcesAlreadyDone = ["CNBC", "BBC"]
+#sources = get_sources()
+sources = ["Addicting Info","Breitbart"]
 #sources.append(source)
 #date = "2017-04-19"
 #start_month = "April"
@@ -35,19 +41,19 @@ for i in months:
     a1 = Article(i, days)
     articles.append(a1)
 
-
+data = []
 for s in sources:
-    data = []
+    del data[:]
     warning = ""
     tags = []
-    words = ""
-    article_data = ""
+    words = " "
+    article_data = " "
     time1 = time.localtime()
     print(str(time1.tm_hour) + ":" + str(time1.tm_min) + ":" + str(time1.tm_sec) + ": Processing articles in " + s + "...")
 
     for a in articles:
         for day in a.dates:
-            article_data = []
+
             file_exists = "true"
             try:
                 article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s)
@@ -56,8 +62,9 @@ for s in sources:
                 file_exists = "false"
 
             if file_exists != "false":
-                article_data = []
+
                 for headline in article_headline:
+                    article_data = []
                     with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + s + "/" + headline, 'rb') as f:
                         try:
                             del article_data
@@ -66,7 +73,7 @@ for s in sources:
                             words = word_tokenize(article_data['html'])
                             last = " "
                             for w in words:
-                                if len(w) > 1 and w[0] == "/" and w[1] != "/" and last == "<":
+                                if len(w) > 1 and w[0] == "/" and w[1] != "/" and last == "<":#THis line detects HTML tags
                                     data.append(w)
                                 last = w
                         except MemoryError:
@@ -85,6 +92,7 @@ for s in sources:
         try:
             all_news_source_data = ' '.join(map(str, data))
             word_tokens = word_tokenize(all_news_source_data)
+
         except MemoryError:
             print(' \n ***Too many aticles from ' + s + ' to batch process*** \n')
             warning = "INCOMPLETE"
@@ -93,18 +101,19 @@ for s in sources:
 
 #print(all_NYT_data)
     if warning != "INCOMPLETE":
-
-
         #print (tags)
         freq_dist = FreqDist(word_tokens)
         freq_dist_top_100 = freq_dist.most_common(100)
 
         print(s)
+        freqDistsNames.append(s)
         print(freq_dist_top_100)
+        freqDists.append(word_tokens)
         print("\n")
         save_as_JSON(freq_dist_top_100, 'HTML/' + s +'_top_100.json')
         save_as_JSON(freq_dist,  'HTML/' + s + '_Frequency_Distribution.json')
 
+print(Utilities.get_cosine_sim(  ' '.join(map(str, freqDists[0])), ' '.join(map(str, freqDists[1]))))
 print("Finito")
 #filtered_sentence = []
 

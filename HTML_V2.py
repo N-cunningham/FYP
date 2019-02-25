@@ -103,7 +103,7 @@ for sources in sourceName:
                             data.append(article_content[part])
 
 
-    data = ' '.join(data)
+    data = ''.join(data)
     data = nltk.word_tokenize(data)
     neighbourhoods = []
     index = 0
@@ -197,7 +197,7 @@ for s in sourceName:
             reliableData.append(sNeigh.neighbourhoods)
 
 
-    reliableData = ' '.join(reliableData)
+    reliableData = ''.join(reliableData)
 
 
     #
@@ -210,7 +210,7 @@ for s in sourceName:
         if sNeigh.sourceName != s and sNeigh.sourceName in quesionable:
             quesionabledata.append(sNeigh.neighbourhoods)
 
-    quesionabledata = ' '.join(quesionabledata)
+    quesionabledata = ''.join(quesionabledata)
 
     index3 = 0;
 
