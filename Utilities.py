@@ -33,7 +33,10 @@ def get_vector(*strs):
     text = [t for t in strs]
     vectorizer = CountVectorizer(text)
     vectorizer.fit(text)
-    return vectorizer.transform(text).toarray()
+    ret = vectorizer.transform(text).toarray()
+    del text
+    del vectorizer
+    return ret
 
 def get_verbs(words):
 

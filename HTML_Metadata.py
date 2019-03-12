@@ -1,3 +1,4 @@
+import sys
 import sklearn
 import nltk
 from nltk import FreqDist
@@ -6,7 +7,6 @@ import time
 from os import listdir
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from enum import Enum
 from Utilities import get_sources
 from Utilities import save_as_JSON
 import Utilities
@@ -24,12 +24,12 @@ sourcesAlreadyDone = ["CNBC", "BBC"]
 #sources = get_sources()
 
 
-reliableSources = ["BBC", "CBS News", "CNBC", "NPR", "PBS"]#, "Slate"]#, "The Atlantic"]#, "The Daily Beast", "The Hill", "Salon", "The Huffington Post", "The New York Times", "USA Today", "Vox", "Washington Examiner", "Media Matters for America", "The Fiscal Times", "AP", "Talking Points Memo"]
+reliableSources = ["BBC", "CBS News", "CNBC", "NPR", "PBS", "Slate"]#, "The Atlantic"]#, "The Daily Beast", "The Hill", "Salon", "The Huffington Post", "The New York Times", "USA Today", "Vox", "Washington Examiner", "Media Matters for America", "The Fiscal Times", "AP", "Talking Points Memo"]
 for rs in reliableSources:
     sources.append(rs)
 reliableTags = []
 
-quesionableSources = ["Alternative Media Syndicate", "Bipartisan Report", "Breitbart", "CNS News", "Conservative Tribune", "Freedom Daily"]#, "Liberty Writers"]#, "Hang The Bankers", "Infowars", "Intellihub", "FrontPage Magazine"]#, "Occupy Democrats", "Politicus USA", "Prntly","RedState", "The Duran", "TruthFeed", "USA Politics Now", "End the Fed", "NODISINFO", "Freedom Outpost", "Waking Times", "NewsBusters", "Activist Post", "The D.C. Clothesline","World News Politics", "Daily Buzz Live", "DC Gazette"]
+quesionableSources = ["Alternative Media Syndicate", "Bipartisan Report", "Breitbart", "CNS News", "Conservative Tribune", "Freedom Daily", "Liberty Writers", "Hang The Bankers", "Infowars"]#, "Intellihub", "FrontPage Magazine"]#, "Occupy Democrats", "Politicus USA", "Prntly","RedState", "The Duran", "TruthFeed", "USA Politics Now", "End the Fed", "NODISINFO", "Freedom Outpost", "Waking Times", "NewsBusters", "Activist Post", "The D.C. Clothesline","World News Politics", "Daily Buzz Live", "DC Gazette"]
 for qs in quesionableSources:
     sources.append(qs)
 quesionableTags = []
@@ -121,17 +121,12 @@ for s in sources:
                                 print(' \n ***Decoding failed for '+ a.month + "/" + day + "/" + s + "/" + headline  + ' *** \n')
 
 
-        all_news_source_data = []
-        del all_news_source_data[:]
-        word_tokens = []
-        del word_tokens[:]
-
         if warning != "INCOMPLETE":
             time2 = time.localtime()
             print(str(time2.tm_hour) + ":" + str(time2.tm_min) + ":" + str(time2.tm_sec) + ": Tokenizing article HTML tags in " + s + "...")
             try:
-                all_news_source_data = ' '.join(map(str, data))
-                word_tokens = word_tokenize(all_news_source_data)
+                data = ' '.join(map(str, data))
+                data = word_tokenize(data)
 
             except MemoryError:
                 print(' \n ***Too many aticles from ' + s + ' to batch process*** \n')
@@ -142,7 +137,7 @@ for s in sources:
     #print(all_NYT_data)
         if warning != "INCOMPLETE":
             #print (tags)
-            freq_dist = FreqDist(word_tokens)
+            freq_dist = FreqDist(data)
             freq_dist_top_100 = freq_dist.most_common(100)
 
             print(s)
@@ -150,15 +145,10 @@ for s in sources:
             print(freq_dist_top_100)
 
             pickle_out = open("C:/Users/Niall/Desktop/FYP/Output JSON Data/HTML/Pickle/"+ s + ".pickle","wb")
-            pickle.dump(word_tokens, pickle_out)
+            pickle.dump(data, pickle_out)
             del pickle_out
             pickle_out.close()
-
-            filename = "C:/Users/Niall/Desktop/FYP/Output JSON Data/HTML/Pickle/"+ s + ".pickle"
-            pickle_in = open(filename,"rb")
-            test_deSer = pickle.load(pickle_in)
-
-            sourcesTags.append(word_tokens)
+            sourcesTags.append(data)
 
             print("\n")
             save_as_JSON(freq_dist_top_100, 'HTML/' + s +'_top_100.json')
@@ -180,8 +170,13 @@ for s in sources:
         print("\n")
         save_as_JSON(freq_dist_top_100, 'HTML/' + s +'_top_100.json')
         save_as_JSON(freq_dist,  'HTML/' + s + '_Frequency_Distribution.json')
+
         del pickle_in
         del word_tokens_pickle
+
+
+
+
 
 SatireCorrect = 0
 QuesionableCorrect = 0
@@ -203,6 +198,12 @@ for st in sources:
             satireTags.append(sourcesTags[index2])
         index2 = index2 + 1
 
+    overallSize = 0
+
+    for size in reliableTags:
+        overallSize = overallSize + sys.getsizeof(size)
+
+    print(overallSize)
     reliableTags = ' '.join(map(str, reliableTags))
     quesionableTags = ' '.join(map(str, quesionableTags))
     satireTags = ' '.join(map(str, satireTags))
