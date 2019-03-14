@@ -46,7 +46,7 @@ sourcesTags = []
 #start_month = "April"
 months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
 
-class Article:
+class ArticlesList:
     def __init__(self, month, dates):
         self.month = month
         self.dates = dates
@@ -55,7 +55,7 @@ articles = []
 
 for i in months:
     days = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + i)
-    a1 = Article(i, days)
+    a1 = ArticlesList(i, days)
     articles.append(a1)
 
 data = []
