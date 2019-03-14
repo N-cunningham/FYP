@@ -31,7 +31,7 @@ From: tensorflow/tensorflow:1.9.0-gpu-py3
   apt-get install -y python3-pip python3-dev build-essential
 
 
-  pip install scikit-image
+  pip install scikit-learn
   pip install nltk
 
 %runscript
