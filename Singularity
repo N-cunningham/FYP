@@ -29,6 +29,7 @@ From: tensorflow/tensorflow:1.9.0-gpu-py3
   apt-get install -y python-tk
   apt-get install -y python3-numpy python3-scipy
   apt-get install -y python3-pip python3-dev build-essential
+  apt-get install python3-tk
 
 
   pip install scikit-learn
