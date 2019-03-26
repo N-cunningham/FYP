@@ -37,6 +37,7 @@ From: tensorflow/tensorflow:1.9.0-gpu-py3
   pip install matplotlib
 
 %runscript
+  RUN python -m nltk.downloader punkt
   # executes with the singularity run command
   # delete this section to use existing docker ENTRYPOINT command
 
