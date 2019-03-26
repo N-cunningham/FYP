@@ -33,6 +33,7 @@ From: tensorflow/tensorflow:1.9.0-gpu-py3
 
   pip install scikit-learn
   pip install nltk
+  pip install matplotlib
 
 %runscript
   # executes with the singularity run command
