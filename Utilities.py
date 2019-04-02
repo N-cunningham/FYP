@@ -1,4 +1,5 @@
 import nltk
+import unittest
 import json
 from os import listdir
 from nltk.tokenize import word_tokenize
@@ -6,6 +7,7 @@ from nltk.stem.porter import *
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import unittest
 
 months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
 
@@ -94,3 +96,16 @@ def stem_tokens(tokens):
     for item in tokens:
         stemmed.append(stemmer.stem(item))
     return stemmed
+
+class jsonIntegrityTest(unittest.TestCase):
+
+    def test(self):
+        self.assertEqual(len(get_sources()), 92)
+
+    def test(self):
+        self.assertEqual(len(months), 7)
+
+def run_utilities_test():
+    testing = unittest.TestLoader().loadTestsFromTestCase(jsonIntegrityTest)
+    unittest.TextTestRunner(verbosity=2).run(testing)
+
