@@ -8,6 +8,10 @@ from nltk.tokenize import word_tokenize
 import Utilities
 import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
+import matplotlib.pyplot as plt
+import numpy
+import pandas as pd
+from numpy  import array
 
 
 stopwords = set(stopwords.words('english'))
@@ -22,7 +26,8 @@ reliableScores = []
 quesionableScores = []
 distributions = []
 classifications = []
-months = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/")
+differenceScores = []
+months = listdir("F:/FYP/Data/JSON Data/")
 
 #with open ("C:/Users/Niall/Desktop/FYP/Output JSON Data/list_of_sources", 'r') as s:
     #sources = json.load(s)
@@ -44,7 +49,7 @@ sourceNeighbourhoods = []
 articles = []
 
 for i in months:
-    days = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + i)
+    days = listdir("F:/FYP/Data/JSON Data/" + i)
     a1 = Article(i, days)
     articles.append(a1)
 
@@ -56,9 +61,9 @@ part = input("What part of the text do you wish to compair (title/content)? ")
 
 stopWord = ""
 
-while stopWord != "#no":
-    stopWord = input("Do you have any additional stop words to add in this case (type #no if not or to stop)? ")
-    additional_stopords.append(stopWord)
+#while stopWord != "#no":
+    #stopWord = input("Do you have any additional stop words to add in this case (type #no if not or to stop)? ")
+    #additional_stopords.append(stopWord)
 
 #print(sourceA)
 #print(sourceB)
@@ -90,20 +95,20 @@ for sources in sourceName:
         file_exists = "true"
         for day in a.dates:
             try:
-                article_headline = listdir("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sources)
+                article_headline = listdir("F:/FYP/Data/JSON Data/" + a.month + "/" + day + "/" + sources)
             except FileNotFoundError:
                 #print("No artilces published by "+ s + " on " + day)
                 file_exists = "false"
 
             if file_exists == "true":
                 for headline in article_headline:
-                    with open ("C:/Users/Niall/Desktop/FYP/JSON Data/" + a.month + "/" + day + "/" + sources + "/" + headline, 'rb') as f:
+                    with open ("F:/FYP/Data/JSON Data/"+ a.month + "/" + day + "/" + sources + "/" + headline, 'rb') as f:
                         article_content = json.load(f)
                         if topic in article_content[part]:
                             data.append(article_content[part])
 
 
-    data = ' '.join(data)
+    data = ''.join(data)
     data = nltk.word_tokenize(data)
     neighbourhoods = []
     index = 0
@@ -197,7 +202,7 @@ for s in sourceName:
             reliableData.append(sNeigh.neighbourhoods)
 
 
-    reliableData = ' '.join(reliableData)
+    reliableData = ''.join(reliableData)
 
 
     #
@@ -210,7 +215,7 @@ for s in sourceName:
         if sNeigh.sourceName != s and sNeigh.sourceName in quesionable:
             quesionabledata.append(sNeigh.neighbourhoods)
 
-    quesionabledata = ' '.join(quesionabledata)
+    quesionabledata = ''.join(quesionabledata)
 
     index3 = 0;
 
@@ -263,6 +268,7 @@ for index in range(len(reliableScores)):
     print("\n" + allsources[index])
     print("Reliable:"+ "\t" + str(reliableScores[index][1][0]))
     print("Quesionable:"+ "\t" + str(quesionableScores[index][1][0]))
+    differenceScores.append( round((quesionableScores[index][1][0] - reliableScores[index][1][0]),5)   )
 
     if allsources[index] in reliableSources:
         print("Original:"+ "\t" + "Reliable" )
@@ -294,6 +300,97 @@ print("Quesionable News Sources")
 print("Reliable Score:"+ "\t\t" + str(quesionableReliableScores))
 print("Quesionable Score:"+ "\t" + str(quesionableQuesionableScores))
 
+
+totalDiff = 0
+
+for dev in differenceScores:
+    totalDiff = totalDiff + abs(dev)
+
+avgDiff = totalDiff / len(differenceScores)
+
+print("\n")
+
+if(avgDiff > .08):
+    resp = (topic +" is a very high target of fake news\n")
+    print(resp)
+
+if(avgDiff < .08 and avgDiff > .0715):
+    resp = (topic +" is a High target of fake news\n")
+    print(resp)
+
+if(avgDiff < .0715 and avgDiff > .054):
+    resp = (topic +" is a Mid-range target of fake news\n")
+    print(resp)
+
+if(avgDiff < .054 and avgDiff > .046):
+    resp = (topic +" is a Low target of fake news\n")
+    print(resp)
+
+if(avgDiff < .046):
+    resp = (topic +" is a Very Low target of fake news\n")
+    print(resp)
+
+print("Average Neighbourhoods Cosine Simularity Deviation for " + topic + ": " + str(avgDiff) + "\n")
+
+FNPER = round(  (((avgDiff-.08)/.08) *100),        2)
+RNPER = round(  (((avgDiff-.046)/.046) *100),        2)
+
+resp = ""
+
+if(FNPER == abs(FNPER)):
+    print("Increase from the topics that are the biggest targets of fake news:\t+" + str(FNPER)+"%")
+else:
+    print("Decrease from the topics that are the biggest targets of fake news:\t" + str(FNPER))
+
+
+if(RNPER == abs(RNPER)):
+    print("Increase from the topics that are the not targeted:\t\t\t+" + str(RNPER) +"%")
+else:
+    print("Decrease from the topics that are the not targeted:\t\t\t" + str(RNPER))
+
+
+
+
 print("\n" + "CORRECT:"+"\t"+str(correct) + "\t" + str((correct/total) *100) + "%")
 print("\n" + "INNCORRECT:"+"\t"+str(inncorrect) + "\t" + str((inncorrect/total) *100) + "%")
     #print(distributions[index])
+
+
+plt.figure(1, figsize=(9, 3))
+
+scoresToProcess = []
+sourcesToProcess = []
+finalIndex = 0
+
+
+for z in differenceScores:
+
+    if z != 0:
+
+        sourcesToProcess.append(allsources[finalIndex])
+        scoresToProcess.append(differenceScores[finalIndex])
+
+    finalIndex = finalIndex + 1
+
+
+x = sourcesToProcess
+y = scoresToProcess
+
+graph_data = pd.DataFrame(
+    {'name': x,
+     'scores': y
+    })
+
+graph_data.sort_values(by=['scores'], inplace=True)
+
+plt.barh(range(len(graph_data['name'])), graph_data['scores'], color="blue")
+plt.yticks(range(len(graph_data['name'])), graph_data['name'])
+plt.title(resp)
+plt.xlabel('Cosine Deviations')
+plt.ylabel('')
+#plt.show()
+#plt.savefig(os.path.join('test.png'), dpi=300, format='png', bbox_inches='tight')
+
+i = 0
+
+plt.show()
