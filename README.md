@@ -1,4 +1,5 @@
 Exploring Authenticity and Truth in News
+
 Examining the differences in narratives and website programming between unreliable and reliable news sources 
 
 Here is an overview of each file in this repository
